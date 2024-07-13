@@ -31,6 +31,8 @@ class Game:
         
         self.movement = [False, False]
 
+        self.win = False
+
         self.assets = {
             'decor': load_images('tiles/decor'),
             'grass': load_images('tiles/grass'),
@@ -70,7 +72,7 @@ class Game:
         self.clouds = Clouds(self.assets['clouds'], count=16)
 
         # initalizing player
-        self.player = Player(self, (100, 100), (8, 15))
+        self.player = Player(self, (-85, 18), (8, 15))
 
         # initalizing tilemap
         self.tilemap = Tilemap(self, tile_size=14)
@@ -137,10 +139,10 @@ class Game:
             self.screenshake = max(0, self.screenshake-1) # resets screenshake value
 
             # level transiition
-            if not len(self.enemies): # no enemies
+            if self.win: # no enemies
                 self.transition += 1 # start timer, increasing value past 0
                 if self.transition > 30: 
-                    self.level = min(self.level + 1, self.max_level) # increase level
+                    self.level = min(self.level, self.max_level) # increase level
                     self.load_level(self.level) # -1 since we start at level 0
             if self.transition < 0:
                 self.transition += 1 # goes up automatically until 0
@@ -155,7 +157,7 @@ class Game:
             # move 'camera' to focus on player, make him the center of the screen
             # scroll = current scroll + (where we want the camera to be - what we have/can see currently) 
             self.scroll[0] += (self.player.rect().centerx - self.display.get_width()/2 - self.scroll[0])  / 30  # x axis
-            self.scroll[1] += (self.player.rect().centery - self.display.get_height()/2 - self.scroll[1]) / 30
+            self.scroll[1] += (self.player.rect().centery - self.display.get_height()/2 - self.scroll[1]) / 30  - 1
 
             # fix the jitter
             render_scroll = (int(self.scroll[0]), int(self.scroll[1]))
